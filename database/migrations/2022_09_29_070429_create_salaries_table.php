@@ -18,7 +18,7 @@ class CreateSalariesTable extends Migration
             $table->text('pekerja');
             $table->text('satuan_uk');
             $table->double('hargas_uk');
-            $table->timestamps();
+            $table->timestamps(); 
             $table->softDeletes();
 
         });

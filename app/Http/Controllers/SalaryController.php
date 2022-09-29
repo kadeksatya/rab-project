@@ -25,9 +25,9 @@ class SalaryController extends Controller
                 ->addColumn('action', function ($data) {
                     $action = '';
 
-                    $action .= '<a href="' . route('salary.edit', $data->id) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
+                    $action .= '<a href="' . route('salary.edit', $data->kode_uk) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
 
-                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('salary.destroy', $data->id) . '" data-id="' . $data->id . '">
+                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('salary.destroy', $data->kode_uk) . '" data-id="' . $data->kode_uk . '">
                                         Delete
                                     </button>';
 
@@ -40,7 +40,7 @@ class SalaryController extends Controller
                 ->make(true);
         } else {
             $data = Salary::orderBy('created_at', 'desc');
-            return view('outlet.salary.index', [
+            return view('admin.salary.index', [
                 'data' => $data,
                 'page_name' => 'Salary List'
             ]);
@@ -111,7 +111,7 @@ class SalaryController extends Controller
      */
     public function edit($id)
     {
-        $data = Salary::where('kode_bm',$id)->first();
+        $data = Salary::where('kode_uk',$id)->first();
         return view('admin.salary.form',[
             'page_name' => 'Add Salary',
             'data' => $data
