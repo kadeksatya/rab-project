@@ -20,7 +20,7 @@ class CreateWorksTable extends Migration
             $table->text('satuan_p')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
+ 
         });
     }
 

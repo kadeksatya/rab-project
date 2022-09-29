@@ -25,9 +25,9 @@ class WorkController extends Controller
                 ->addColumn('action', function ($data) {
                     $action = '';
 
-                    $action .= '<a href="' . route('work.edit', $data->id) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
+                    $action .= '<a href="' . route('work.edit', $data->kode_p) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
 
-                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('work.destroy', $data->id) . '" data-id="' . $data->id . '">
+                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('work.destroy', $data->kode_p) . '" data-id="' . $data->kode_p . '">
                                         Delete
                                     </button>';
 
@@ -40,7 +40,7 @@ class WorkController extends Controller
                 ->make(true);
         } else {
             $data = Work::orderBy('created_at', 'desc');
-            return view('outlet.work.index', [
+            return view('admin.work.index', [
                 'data' => $data,
                 'page_name' => 'Work List'
             ]);
