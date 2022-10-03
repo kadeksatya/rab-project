@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Material;
+use App\Models\Salary;
+use App\Models\Tools;
+use App\Models\WorkerDetail;
 use App\Models\Workers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,9 +29,9 @@ class WorkersController extends Controller
                 ->addColumn('action', function ($data) {
                     $action = '';
 
-                    $action .= '<a href="' . route('workers.edit', $data->id) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
+                    $action .= '<a href="' . route('workers.edit', $data->kode_hps) . '" class="btn btn-white btn-sm" data-placement="bottom" data-bs-toggle="tooltip" data-placement="bottom" title="Edit" data-original-title="Edit">Edit</a>';
 
-                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('workers.destroy', $data->id) . '" data-id="' . $data->id . '">
+                    $action .= '<button class="btn btn-danger ml-1 btn-sm delete-item" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Delete" data-url="' . route('workers.destroy', $data->kode_hps) . '" data-id="' . $data->kode_hps . '">
                                         Delete
                                     </button>';
 
@@ -40,9 +44,9 @@ class WorkersController extends Controller
                 ->make(true);
         } else {
             $data = Workers::orderBy('created_at', 'desc');
-            return view('outlet.workers.index', [
+            return view('admin.workers.index', [
                 'data' => $data,
-                'page_name' => 'Workers List'
+                'page_name' => 'Harga Satuan Pekerjaan'
             ]);
         }
     }
@@ -54,7 +58,14 @@ class WorkersController extends Controller
      */
     public function create()
     {
+        $dataMaterial = Material::all();
+        $dataTools = Tools::all();
+        $dataSalary = Salary::all();
+
         return view('admin.workers.form',[
+            'material' => $dataMaterial,
+            'tool' => $dataTools,
+            'salary' => $dataSalary,
             'page_name' => 'Add Workers Data'
         ]);
     }
@@ -71,24 +82,27 @@ class WorkersController extends Controller
         try {
 
             $forms = $request->validate([
-                'kode_bm' => ['required'],
-                'kode_alat' => ['required'],
-                'kode_p' => ['required'],
-                'kode_uk' => ['required'],
-                'koefisien' => ['required'],
                 'jenis_p' => ['required'],
                 'nama_p' => ['required'],
-                'nama_bahan' => ['required'],
-                'pekerja' => ['required'],
-                'jenis_alat' => ['required'],
-                'satuan_hps' => ['required'],
-                'hargas_bahan' => ['required'],
-                'hargas_uk' => ['required'],
-                'biaya_sewa' => ['required'],
-                'harga_satuan' => ['required'],
             ]);
 
-            Workers::create($forms);
+
+            $ids = Workers::create($forms);
+
+            $details = $request->harga;
+
+            foreach ($details as $index => $value) {
+                WorkerDetail::create([
+                    'kode_hps' => $ids->kode_hps,
+                    'koefisien' => $request->koefisien[$index],
+                    'kode_bm' => $request->kode_bm[$index],
+                    'kode_alat' => $request->kode_alat[$index],
+                    'kode_p' => $request->kode_p[$index],
+                    'harga_satuan' => $request->harga_satuan[$index],
+                    'satuan' => $request->satuan[$index],
+                    'harga' => $request->harga[$index]
+                ]);
+            }
 
             DB::commit();
 
@@ -142,25 +156,31 @@ class WorkersController extends Controller
         DB::beginTransaction();
         try {
 
+
             $forms = $request->validate([
-                'kode_bm' => ['required'],
-                'kode_alat' => ['required'],
-                'kode_p' => ['required'],
-                'kode_uk' => ['required'],
-                'koefisien' => ['required'],
                 'jenis_p' => ['required'],
                 'nama_p' => ['required'],
-                'nama_bahan' => ['required'],
-                'pekerja' => ['required'],
-                'jenis_alat' => ['required'],
-                'satuan_hps' => ['required'],
-                'hargas_bahan' => ['required'],
-                'hargas_uk' => ['required'],
-                'biaya_sewa' => ['required'],
-                'harga_satuan' => ['required'],
             ]);
 
             Workers::where('kode_hps', $id)->update($forms);
+
+            WorkerDetail::where('kode_hps', $id)->delete();
+
+            $details = $request->harga;
+
+            foreach ($details as $index => $value) {
+                WorkerDetail::create([
+                    'kode_hps' => $id,
+                    'koefisien' => $request->koefisien[$index],
+                    'kode_bm' => $request->kode_bm[$index],
+                    'kode_alat' => $request->kode_alat[$index],
+                    'kode_p' => $request->kode_p[$index],
+                    'harga_satuan' => $request->harga_satuan[$index],
+                    'satuan' => $request->satuan[$index],
+                    'harga' => $request->harga[$index]
+                ]);
+            }
+
 
             DB::commit();
 

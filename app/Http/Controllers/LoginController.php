@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
-    public function showFormLogin()
+    public function showLoginForm()
     {
         if(Auth::check()){
             return redirect()->back();
